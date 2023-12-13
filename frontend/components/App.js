@@ -73,6 +73,12 @@ export default function App() {
   const [serverSuccess, setServerSuccess] = useState()
   const [serverFailure, setServerFailure] = useState()
   const [formEnabled, setFormEnabled] = useState(false)
+
+
+  useEffect( () => {
+    userSchema.isValid(values).then(setFormEnabled)
+  }, [values])
+
   // ✨ TASK: BUILD YOUR EFFECT HERE
   // Whenever the state of the form changes, validate it against the schema
   // and update the state that tracks whether the form is submittable.
@@ -86,6 +92,9 @@ export default function App() {
     let { type, name, value, checked } = evt.target
     value = type == 'checkbox' ? checked : value
     setValues({ ...values, [name]: value })
+    yup.reach(userSchema, name).validate(value)
+      .then( () => setErrors( { ...errors, [name]: ''}))
+      .catch((err) => setErrors( { ...errors, [name]: err. errors[0] }))
   }
 
   const onSubmit = evt => {
